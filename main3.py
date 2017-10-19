@@ -46,15 +46,16 @@ while gameon:
     screen.blit(bush, (bushx, 520))
     screen.blit(totoro, (totorox, totoroy))
     
-
     if direction == "right":
-        backgroundx = backgroundx - 1
-        # treex = treex - 3
-        bushx = bushx - 3
+        if backgroundx >= -4147 + 1280:
+            backgroundx = backgroundx - 10
+            bushx = bushx - 3
     if direction == "left":
-        backgroundx = backgroundx + 1
-        # treex = treex + 3
-        bushx = bushx - 3
-    
+        if not backgroundx >= 1:
+            backgroundx = backgroundx + 1
+            # treex = treex + 3
+            bushx = bushx - 3
+
+    print(backgroundx)
     clock.tick(FPS)
     pygame.display.update()
