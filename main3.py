@@ -12,9 +12,12 @@ screen = pygame.display.set_mode((screenwidth, screenheight))
 forest = pygame.image.load("img/forestoil.jpg")
 totororight = pygame.image.load("img/totororight.png")
 totoroleft = pygame.image.load("img/totoroleft.png")
+acorns = pygame.image.load("img/acorns.png")
+acornsrect = acorns.get_rect(x=2000, y=220)
 
 whitetotoro = pygame.image.load("img/whitetotorosmall.png")
-whitetotoroRect = whitetotoro.get_rect(x=100, y=620)
+whitetotoroRect = whitetotoro.get_rect(x=1400, y=620)
+whitetotoroFollow = False
 
 totororect = totororight.get_rect()
 # tree = pygame.image.load("img/elmtree.png")
@@ -31,6 +34,9 @@ totoro = totororight
 totorosong = pygame.mixer.Sound("snd/totoro-song.wav")
 totorosong.play()
 
+plop = pygame.mixer.Sound("snd/blop2.wav")
+acornplay = False
+
 totororect.centerx = 291
 totororect.centery = 570
 
@@ -41,6 +47,7 @@ backgroundx = 0
 speed = 1
 direction = "right"
 jumpdirection = "stop"
+foregroundspeed = 2
 gameon = True
 
 while gameon:
@@ -64,39 +71,67 @@ while gameon:
     screen.blit(whitetotoro, whitetotoroRect)
     screen.blit(bush, bushrect)
     screen.blit(bush, (bush2rect))
+    screen.blit(acorns, acornsrect)
     
     
     if direction == "right":
         if backgroundx >= -4147 + 1280:
             backgroundx = backgroundx - speed
-            bushrect.centerx = bushrect.centerx - speed - 2
+            bushrect.centerx = bushrect.centerx - speed - foregroundspeed
             bushCollisionRect.centerx = bushrect.centerx
-            bush2rect.centerx = bush2rect.centerx - speed - 2
+            bush2rect.centerx = bush2rect.centerx - speed - foregroundspeed
             bushCollisionRect2.centerx = bush2rect.centerx
+            acornsrect.centerx = acornsrect.centerx - speed 
+            if not whitetotoroFollow:
+                whitetotoroRect.centerx = whitetotoroRect.centerx - speed - 1
     if direction == "left":
         if not backgroundx >= 1:
             backgroundx = backgroundx + speed
             # treex = treex + 3
-            bushrect.centerx = bushrect.centerx + speed + 2
+            bushrect.centerx = bushrect.centerx + speed + foregroundspeed
             bushCollisionRect.centerx = bushrect.centerx
-            bush2rect.centerx = bush2rect.centerx - speed - 2
+            bush2rect.centerx = bush2rect.centerx + speed + foregroundspeed
             bushCollisionRect2.centerx = bush2rect.centerx
+            acornsrect.centerx = acornsrect.centerx + speed 
+            if not whitetotoroFollow:
+                whitetotoroRect.centerx = whitetotoroRect.centerx + speed + 1
     if jumpdirection == "up":
         if totororect.top > 15:
             totororect.centery = totororect.centery - 5
-            whitetotoroRect.centery = whitetotoroRect.centery - 5
+            if whitetotoroFollow:
+                whitetotoroRect.centery = whitetotoroRect.centery - 5
         else:
             jumpdirection = "down"
     if jumpdirection == "down":
         if totororect.centery < 570:
             totororect.centery = totororect.centery + 3
-            whitetotoroRect.centery = whitetotoroRect.centery + 3
+            if whitetotoroFollow and whitetotoroRect.y < 620:
+                whitetotoroRect.centery = whitetotoroRect.centery + 3
         else:
             jumpdirection = "stop"
     
-    if totororect.colliderect(bushCollisionRect):
+    if totororect.colliderect(bushCollisionRect) or \
+            (whitetotoroRect.colliderect(bushCollisionRect)):
         print("murp")
-    if totororect.colliderect(bushCollisionRect2):
+    if totororect.colliderect(bushCollisionRect2) or \
+            (whitetotoroRect.colliderect(bushCollisionRect2)):
         print("meh")
+        whitetotoroFollow = False
+    
+    if totororect.colliderect(whitetotoroRect):
+        whitetotoroFollow = True
+        print("totoro follow")
+        whitetotoroRect.y = 620
+        # if (whitetotoroRect.centerx - totororect.centerx) > 140: 
+            # whitetotoroRect.centerx = whitetotoroRect.centerx - speed - 1
+        whitetotoroRect.centerx = totororect.centerx - 150
+    
+    if totororect.colliderect(acornsrect):
+        if not acornplay:
+            plop.play()
+            acornplay = True
+    else:
+        acornplay = False
+
     clock.tick(FPS)
     pygame.display.update()
