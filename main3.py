@@ -15,6 +15,10 @@ totoroleft = pygame.image.load("img/totoroleft.png")
 acorns = pygame.image.load("img/acorns.png")
 acornsrect = acorns.get_rect(x=2000, y=220)
 
+flute = pygame.image.load("img/flute.png")
+fluterect = flute.get_rect(x=230, y=570)
+fluteFollow = True
+
 whitetotoro = pygame.image.load("img/whitetotorosmall.png")
 whitetotoroRect = whitetotoro.get_rect(x=1400, y=620)
 whitetotoroFollow = False
@@ -72,6 +76,7 @@ while gameon:
     screen.blit(bush, bushrect)
     screen.blit(bush, (bush2rect))
     screen.blit(acorns, acornsrect)
+    screen.blit(flute, fluterect)
     
     
     if direction == "right":
@@ -84,6 +89,8 @@ while gameon:
             acornsrect.centerx = acornsrect.centerx - speed 
             if not whitetotoroFollow:
                 whitetotoroRect.centerx = whitetotoroRect.centerx - speed - 1
+            if not fluteFollow:
+                fluterect.centerx = fluterect.centerx - speed - 1
     if direction == "left":
         if not backgroundx >= 1:
             backgroundx = backgroundx + speed
@@ -95,11 +102,16 @@ while gameon:
             acornsrect.centerx = acornsrect.centerx + speed 
             if not whitetotoroFollow:
                 whitetotoroRect.centerx = whitetotoroRect.centerx + speed + 1
+            if not fluteFollow:
+                fluterect.centerx = fluterect.centerx + speed + 1
     if jumpdirection == "up":
         if totororect.top > 15:
             totororect.centery = totororect.centery - 5
+            
             if whitetotoroFollow:
                 whitetotoroRect.centery = whitetotoroRect.centery - 5
+            if fluteFollow:
+                fluterect.centery = fluterect.centery - 5                                
         else:
             jumpdirection = "down"
     if jumpdirection == "down":
@@ -107,12 +119,15 @@ while gameon:
             totororect.centery = totororect.centery + 3
             if whitetotoroFollow and whitetotoroRect.y < 620:
                 whitetotoroRect.centery = whitetotoroRect.centery + 3
+            if fluteFollow and fluterect.y < 620:
+                fluterect.centery = fluterect.centery + 3
         else:
             jumpdirection = "stop"
     
     if totororect.colliderect(bushCollisionRect) or \
             (whitetotoroRect.colliderect(bushCollisionRect)):
         print("murp")
+        fluteFollow = False
     if totororect.colliderect(bushCollisionRect2) or \
             (whitetotoroRect.colliderect(bushCollisionRect2)):
         print("meh")
@@ -126,6 +141,16 @@ while gameon:
             # whitetotoroRect.centerx = whitetotoroRect.centerx - speed - 1
         whitetotoroRect.centerx = totororect.centerx - 150
     
+    
+    
+    if totororect.colliderect(fluterect):
+        fluteFollow = True
+        fluterect.y = 570
+        fluterect.centerx = totororect.centerx - 0
+
+    if totororect.colliderect(bushCollisionRect):
+        fluteFollow = False
+
     if totororect.colliderect(acornsrect):
         if not acornplay:
             plop.play()
